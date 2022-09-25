@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!-- saved from url=(0067)https://openhome.cc/Gossip/ComputerGraphics/html/StechCurves-1.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <script type="text/javascript" src="./StechCurves-1_files/turtle.js.下載"></script>
+        <script type="text/javascript">
+            window.onload = function() {
+                function stech(n, leng) {
+                    if(n == 0) {
+                        turtle.move(leng);
+                    }
+                    else {
+                        stech(n-1, leng); turtle.turn(-95);
+                        stech(n-1, leng); turtle.turn(95);
+                        stech(n-1, leng); turtle.turn(95);
+                        stech(n-1, leng); turtle.turn(-95);
+                        stech(n-1, leng);
+                   }
+               }    
+                
+                var canvas1 = document.getElementById('canvas1');
+                var context = canvas1.getContext('2d');
+                var turtle = new Turtle(context);
+                
+                turtle.window(0, 0, canvas1.width, canvas1.height);
+
+                turtle.view(0, 0, canvas1.width, canvas1.height);
+                turtle.setPoint(125, 125);
+                turtle.setAngle(0);
+                
+                for(var i = 1; i <= 5; i++) {
+                    //(十字繡次數曲線, 放大)
+                    stech(3, 9);
+                    turtle.turn(90);
+                }
+            };
+        </script>
+    </head>
+    <body>       
+        <!-- 圖片大小更改 -->
+        <canvas id="canvas1" width="500" height="500"></canvas>
+    </body>
+    </html>

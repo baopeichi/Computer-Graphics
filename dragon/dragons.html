@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN">
+<html>
+
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+        integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            let aa = 0;
+            //用for迴圈新增另外三個圖層
+            for (let i = 0; i < 4; i++) {
+                console.log('執行一次');
+
+                function dragon(n, a) {
+                    if (n == 0) {
+                        turtle.move(4);
+                    }
+                    else {
+                        dragon(n - 1, 90);
+                        turtle.turn(a);
+                        dragon(n - 1, -90);
+                    }
+                }
+                //依次抓取不同圖層
+                let canvas = document.getElementById(`canvas${i}`);
+                var context = canvas.getContext('2d');
+                var turtle = new Turtle(context);
+
+                turtle.window(0, 0, canvas.width, canvas.height);
+
+                turtle.view(0, 0, canvas.width, canvas.height);
+                //位置(x,y)
+                turtle.setPoint(200, 200);
+                //(走幾步,旋轉角度)
+                dragon(10, aa);
+                //每次角度加90度
+                aa += 90;
+            }
+        };
+
+        function Turtle(context) {
+            function toRadians(angle) {
+                return angle * Math.PI / 180;
+            }
+
+            function drawLine(x1, y1, x2, y2) {
+                context.beginPath();
+                context.moveTo(x1, y1);
+                context.lineTo(x2, y2);
+                context.stroke();
+            }
+
+            this.angle                               // current angle
+                = this.currentX = this.currentY = 0; // current position
+
+            var wx1 = wy1 = wx2 = wy2                // canvas coordination
+                = vx1 = vy1 = vx2 = vy2              // viewable area
+                = factX = factY = 0;                 // scale 
+
+            this.context = context;
+
+            this.window = function (x1, y1, x2, y2) {
+                wx1 = x1;
+                wy1 = y1;
+                wx2 = x2;
+                wy2 = y2;
+                factX = (vx2 - vx1) / (wx2 - wx1);
+                factY = (vy2 - vy1) / (wy2 - wy1);
+            };
+
+            this.view = function (x1, y1, x2, y2) {
+                this.context.beginPath();
+                this.context.rect(x1, y1, x2 - x1, y2 - y1);
+                this.context.clip();
+                this.context.stroke();
+                this.context.closePath();
+                vx1 = x1;
+                vy1 = y1;
+                vx2 = x2;
+                vy2 = y2;
+                factX = (vx2 - vx1) / (wx2 - wx1);
+                factY = (vy2 - vy1) / (wy2 - wy1);
+            };
+
+            this.setPoint = function (x, y) {
+                this.currentX = x;
+                this.currentY = y;
+            };
+
+            this.setAngle = function (a) {
+                this.angle = a;
+            };
+
+            this.warp = function (l) {
+                this.setPoint(this.currentX + l * Math.cos(toRadians(this.angle)),
+                    this.currentY + l * Math.sin(toRadians(this.angle)));
+            };
+
+            this.move = function (l) {
+                var x = this.currentX + l * Math.cos(toRadians(this.angle));
+                var y = this.currentY + l * Math.sin(toRadians(this.angle));
+                var x1 = (this.currentX - wx1) * factX + vx1;
+                var y1 = (wy2 - this.currentY) * factY + vy1;
+                var x2 = (x - wx1) * factX + vx1;
+                var y2 = (wy2 - y) * factY + vy1;
+                drawLine(x1, y1, x2, y2);
+                this.setPoint(x, y);
+            };
+
+            this.moveTo = function (x, y) {
+                var x1 = (this.currentX - wx1) * factX + vx1;
+                var y1 = (wy2 - this.currentY) * factY + vy1;
+                var x2 = (x - wx1) * factX + vx1;
+                var y2 = (wy2 - y) * factY + vy1;
+                drawLine(x1, y1, x2, y2);
+                this.setPoint(x, y);
+            };
+
+            this.pset = function (x, y) {
+                drawLine(x, y, x + 1, y + 1);
+            };
+
+            this.line = function (x1, y1, x2, y2) {
+                this.setPoint(x1, y1);
+                this.moveTo(x2, y2);
+            };
+
+            this.turn = function (a) {
+                this.angle = this.angle + a;
+                this.angle = this.angle % 360;
+            };
+
+            this.polygon = function (tri) {
+                this.context.beginPath();
+                this.context.moveTo(tri[0].x, tri[0].y);
+                for (var i = 1; i < tri.length; i++) {
+                    this.context.lineTo(tri[i].x, tri[i].y);
+                }
+                this.context.closePath();
+                this.context.fill();
+            };
+        }
+    </script>
+</head>
+<style>
+    /*設定圖片位置，使之重疊*/
+    #canvas2,
+    #canvas1,
+    #canvas3,
+    #canvas0 {
+        position: absolute;
+        left: 0;
+    }
+</style>
+
+<body>
+    <!-- 圖片大小*4 -->
+    <canvas id="canvas0" width="500" height="500"></canvas>
+    <canvas id="canvas1" width="500" height="500"></canvas>
+    <canvas id="canvas2" width="500" height="500"></canvas>
+    <canvas id="canvas3" width="500" height="500"></canvas>
+</body>
+
+</html>
